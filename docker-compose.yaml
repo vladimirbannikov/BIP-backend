@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  project:
+    build:
+      context: .
+      dockerfile: docker/Dockerfiewle
+    restart: "no"
+    networks:
+      - project
+
+networks:
+  project:
+    driver: bridge
+
+# TODO: postgres
