@@ -13,3 +13,7 @@ type loginUserReq struct {
 type loginUserResp struct {
 	AccessToken string `json:"access_token"`
 }
+
+type User2FAInput struct {
+	Code string `json:"code"`
+}

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"github.com/vladimirbannikov/BIP-backend/internal/utils/configer"
 	"github.com/vladimirbannikov/BIP-backend/internal/utils/logger"
@@ -8,6 +9,8 @@ import (
 	"net/http/httputil"
 	"strconv"
 	"time"
+
+	"github.com/vladimirbannikov/BIP-backend/internal/models"
 
 	"github.com/gorilla/mux"
 )
@@ -72,6 +75,15 @@ func createRouter(implUsers usersServer, implAuth authServer) *mux.Router {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
+
+	router.HandleFunc("/user2fa", func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case http.MethodPost:
+			implAuth.User2FA(w, req)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
 	return router
 }
 
@@ -80,6 +92,9 @@ const authHeaderStr = "Auth"
 func logMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
 		rawRequest, _ := httputil.DumpRequest(req, true)
+		if req.URL.Path == "/register" {
+			handler.ServeHTTP(writer, req)
+		}
 		logger.Log(logger.InfoPrefix, fmt.Sprintf("%q", rawRequest))
 		handler.ServeHTTP(writer, req)
 	})
@@ -87,8 +102,10 @@ func logMiddleware(handler http.Handler) http.Handler {
 
 func (s *authServer) authMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
-		if req.URL.Path == "/register" || req.URL.Path == "/login" {
+		if req.URL.Path == "/register" || req.URL.Path == "/login" || req.URL.Path == "/user2fa" {
 			handler.ServeHTTP(writer, req)
+			// после успешного логина клиенту нужно запросить 2fa
+			// после регистрации клиенту выдается qr код
 			return
 		}
 		tokenStr := req.Header.Get(authHeaderStr)
@@ -101,6 +118,18 @@ func (s *authServer) authMiddleware(handler http.Handler) http.Handler {
 		if err != nil {
 			logger.Log(logger.ErrPrefix, fmt.Sprintf("Service: authServer: ValidateUserToken: %s", err))
 			writer.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		err = s.m.CheckUser2FA(req.Context(), tokenStr)
+		if err != nil {
+			if errors.Is(err, models.ErrNo2FAOrExpired) {
+				writer.WriteHeader(http.StatusUnauthorized)
+				// клиент должен дергать логин
+				return
+			}
+			logger.Log(logger.ErrPrefix, fmt.Sprintf("Service: authServer: CheckUser2FA: %s", err))
+			writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 

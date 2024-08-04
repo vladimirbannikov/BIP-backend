@@ -23,8 +23,8 @@ func New(db db.DBops) *Repo {
 func (r *Repo) CreateUser(ctx context.Context, user *structs.UserDTO) (int, error) {
 	id := 0
 	err := r.db.ExecQueryRow(ctx,
-		`INSERT INTO users_schema.users(login, password_hash)
-				VALUES($1,$2) returning 1;`, user.Login, user.PasswordHash).Scan(&id)
+		`INSERT INTO users_schema.users(login, email, password_hash)
+				VALUES($1,$2,$3) returning 1;`, user.Login, user.Email, user.PasswordHash).Scan(&id)
 
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -41,7 +41,7 @@ func (r *Repo) CreateUser(ctx context.Context, user *structs.UserDTO) (int, erro
 func (r *Repo) GetUserByLogin(ctx context.Context, login string) (*structs.UserDTO, error) {
 	var info structs.UserDTO
 	err := r.db.Get(ctx, &info,
-		`SELECT login, password_hash FROM users_schema.users WHERE login=$1;`, login)
+		`SELECT login, password_hash, email FROM users_schema.users WHERE login=$1;`, login)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 			return nil, repository.ErrObjectNotFound
