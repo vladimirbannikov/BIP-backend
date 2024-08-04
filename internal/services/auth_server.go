@@ -15,10 +15,14 @@ import (
 )
 
 type AuthModelManager interface {
-	RegisterUser(ctx context.Context, input structs.RegisterUserInput) error
+	RegisterUser(ctx context.Context, input structs.RegisterUserInput) (qr2fa string, err error)
 	LoginUser(ctx context.Context, input structs.LoginUserInput) (string, error)
 	LogoutUser(ctx context.Context, tokenStr string) error
 	ValidateUserToken(ctx context.Context, tokenStr string) error
+	CheckUser2FA(ctx context.Context, tokenStr string) error
+	Validate2FACode(ctx context.Context, code string, tokenStr string) (valid bool, err error)
+	// если просрочен 2fa код или его вообще нет, то возвращать, чтобы фронт дергал ручку логина
+	// проверки правильности введенного кода (который ввел клиент), потом кидать запрос в гугл аутентификатор
 }
 
 type authServer struct {
@@ -43,7 +47,7 @@ func (s *authServer) Register(w http.ResponseWriter, req *http.Request) {
 		Password: unm.Password,
 	}
 	data, status := s.register(req.Context(), userInput)
-	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status))
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
@@ -52,14 +56,14 @@ func (s *authServer) Register(w http.ResponseWriter, req *http.Request) {
 }
 
 func (s *authServer) register(ctx context.Context, input structs.RegisterUserInput) ([]byte, int) {
-	err := s.m.RegisterUser(ctx, input)
+	qr, err := s.m.RegisterUser(ctx, input)
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidInput) || errors.Is(err, models.ErrConflict) {
 			return nil, http.StatusBadRequest
 		}
 		return nil, http.StatusInternalServerError
 	}
-	return nil, http.StatusOK
+	return []byte(qr), http.StatusOK
 }
 
 func (s *authServer) Login(w http.ResponseWriter, req *http.Request) {
@@ -129,6 +133,50 @@ func (s *authServer) logout(ctx context.Context, tokenStr string) ([]byte, int) 
 			return nil, http.StatusBadRequest
 		}
 		return nil, http.StatusInternalServerError
+	}
+	return nil, http.StatusOK
+}
+
+func (s *authServer) User2FA(w http.ResponseWriter, req *http.Request) {
+	tokenStr := req.Header.Get(authHeaderStr)
+	if tokenStr == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var unm User2FAInput
+	if err := json.Unmarshal(body, &unm); err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	data, status := s.user2fa(req.Context(), unm.Code, tokenStr)
+
+	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.WriteHeader(status)
+	_, err = w.Write(data)
+	if err != nil {
+		return
+	}
+}
+
+func (s *authServer) user2fa(ctx context.Context, code string, tokenStr string) ([]byte, int) {
+	valid, err := s.m.Validate2FACode(ctx, code, tokenStr)
+	if err != nil {
+		if errors.Is(err, models.ErrInvalidToken) {
+			return nil, http.StatusUnauthorized
+		}
+		return nil, http.StatusInternalServerError
+	}
+	if !valid {
+		return nil, http.StatusUnauthorized
 	}
 	return nil, http.StatusOK
 }

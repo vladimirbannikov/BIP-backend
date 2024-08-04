@@ -15,3 +15,5 @@ func NewModelAuth(as AuthStorager, us UsersStorager) ModelAuth {
 func NewModelUsers(us UsersStorager) ModelUsers {
 	return ModelUsers{us}
 }
+
+const ServiceName = "BipServiceWithTests"

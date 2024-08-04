@@ -12,6 +12,9 @@ type AuthRepo interface {
 	CreateUserSecret(ctx context.Context, secretDTO *structs.UserSecretDTO) error
 	DeleteUserSecret(ctx context.Context, input structs.DeleteUserSecretInput) error
 	GetSecretByUserID(ctx context.Context, input structs.GetUserSecretInput) (*structs.UserSecretDTO, error)
+	GetUser2FAInfo(ctx context.Context, login string) (*structs.User2FAInfoDTO, error)
+	CreateUser2FASecret(ctx context.Context, secretDTO *structs.User2FAInfoDTO) error
+	UpdateUser2FASecret(ctx context.Context, secretDTO *structs.User2FAInfoDTO) error
 }
 
 type AuthStorage struct {
@@ -52,6 +55,44 @@ func (s *AuthStorage) DeleteUserSecret(ctx context.Context, input structs.Delete
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return models.ErrNotFound
+		}
+		return err
+	}
+	return nil
+}
+
+func (s *AuthStorage) GetUser2FAInfo(ctx context.Context, login string) (structs.User2FAInfo, error) {
+	info, err := s.authRepo.GetUser2FAInfo(ctx, login)
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return structs.User2FAInfo{}, models.ErrNotFound
+		}
+		return structs.User2FAInfo{}, err
+	}
+	return structs.User2FAInfo{
+		Login:      info.Login,
+		ValidUntil: info.ValidUntil,
+		Secret:     info.Secret,
+	}, nil
+}
+
+// CreateUser2FASecret secret
+func (s *AuthStorage) CreateUser2FASecret(ctx context.Context, infoDTO structs.User2FAInfoDTO) error {
+	err := s.authRepo.CreateUser2FASecret(ctx, &infoDTO)
+	if err != nil {
+		if errors.Is(err, repository.ErrDuplicateKey) {
+			return models.ErrConflict
+		}
+		return err
+	}
+	return nil
+}
+
+func (s *AuthStorage) UpdateUser2FASecret(ctx context.Context, infoDTO structs.User2FAInfoDTO) error {
+	err := s.authRepo.UpdateUser2FASecret(ctx, &infoDTO)
+	if err != nil {
+		if errors.Is(err, repository.ErrDuplicateKey) {
+			return models.ErrConflict
 		}
 		return err
 	}
