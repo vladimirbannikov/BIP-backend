@@ -96,7 +96,7 @@ const validHoursNum = 24
 func (m *ModelAuth) LoginUser(ctx context.Context, input structs.LoginUserInput) (string, error) {
 	userDTO, err := m.us.GetUserByLogin(ctx, input.Login)
 	if err != nil {
-		logger.Log(logger.ErrPrefix, fmt.Sprintf("ModelAuth: LoginUser: GetUserByLogin error: %s", err.Error()))
+		logger.Log(logger.ErrPrefix, fmt.Sprintf("ModelAuth: LoginUser: GetUserByID error: %s", err.Error()))
 		if errors.Is(err, ErrNotFound) || errors.Is(err, ErrConflict) || errors.Is(err, ErrInvalidInput) {
 			return "", ErrBadCredentials
 		}

@@ -4,7 +4,7 @@ FROM golang:1.22-alpine AS builder
 RUN apk add --update make git curl
 RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
-ARG MODULE_NAME=gitlab.ozon.dev/v2bannikov/BIP-backend
+ARG MODULE_NAME=github.com/vladimirbannikov/BIP-backend
 
 COPY Makefile /home/${MODULE_NAME}/Makefile
 COPY go.mod /home/${MODULE_NAME}/go.mod
@@ -19,7 +19,7 @@ RUN make build
 # Service
 
 FROM alpine:latest as server
-ARG MODULE_NAME=gitlab.ozon.dev/v2bannikov/BIP-backend
+ARG MODULE_NAME=github.com/vladimirbannikov/BIP-backend
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 

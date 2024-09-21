@@ -7,6 +7,7 @@ import (
 	"github.com/vladimirbannikov/BIP-backend/internal/services"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage/repository/postgresql/auth"
+	"github.com/vladimirbannikov/BIP-backend/internal/storage/repository/postgresql/tests"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage/repository/postgresql/users"
 	"github.com/vladimirbannikov/BIP-backend/internal/utils/logger"
 )
@@ -22,14 +23,17 @@ func Start() error {
 
 	usersRepo := users.New(dbStor.DB)
 	authRepo := auth.New(dbStor.DB)
+	testsRepo := tests.New(dbStor.DB)
 
 	usersStorage := storage.NewUsersStorage(usersRepo)
 	authStorage := storage.NewAuthStorage(authRepo)
+	testsStorage := storage.NewTestsStorage(testsRepo)
 
 	amdl := models.NewModelAuth(&authStorage, &usersStorage)
 	umdl := models.NewModelUsers(&usersStorage)
+	tmdl := models.NewModelTests(&usersStorage, &testsStorage)
 
-	serv := services.NewService(&amdl, &umdl)
+	serv := services.NewService(&amdl, &umdl, &tmdl)
 
 	serv.Launch()
 

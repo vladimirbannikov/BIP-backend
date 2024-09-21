@@ -18,22 +18,27 @@ import (
 type Service struct {
 	am AuthModelManager
 	um UsersModelManager
+	tm TestsModelManager
 }
 
-func NewService(am AuthModelManager, um UsersModelManager) Service {
-	return Service{am: am, um: um}
+func NewService(am AuthModelManager, um UsersModelManager, tm TestsModelManager) Service {
+	return Service{am: am, um: um, tm: tm}
 }
+
+const loginKey = "login"
+const testIdKey = "id"
 
 func (s Service) Launch() {
 	implUsers := usersServer{s.um}
 	implAuth := authServer{s.am}
+	implTests := testsServer{s.tm}
 	cfg, err := configer.GetConfig()
 	if err != nil {
 		logger.Log(logger.ErrPrefix, fmt.Sprintf("Service: Launch: configer.GetConfig error: %s", err.Error()))
 		return
 	}
 	muxx := http.NewServeMux()
-	muxx.Handle("/", createRouter(implUsers, implAuth))
+	muxx.Handle("/", createRouter(implUsers, implAuth, implTests))
 	serv := http.Server{
 		Addr:              ":" + strconv.Itoa(cfg.Server.Port),
 		ReadHeaderTimeout: 10 * time.Second,
@@ -44,7 +49,7 @@ func (s Service) Launch() {
 	}
 }
 
-func createRouter(implUsers usersServer, implAuth authServer) *mux.Router {
+func createRouter(implUsers usersServer, implAuth authServer, implTests testsServer) *mux.Router {
 	router := mux.NewRouter()
 	router.Use(logMiddleware)
 	router.Use(implAuth.authMiddleware)
@@ -84,6 +89,57 @@ func createRouter(implUsers usersServer, implAuth authServer) *mux.Router {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
+
+	router.HandleFunc(fmt.Sprintf("/user/{%s:[a-zA-Z0-9_]+}", loginKey), func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case http.MethodGet:
+			implUsers.GetUserProfile(w, req)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	router.HandleFunc(fmt.Sprintf("/userMy"), func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case http.MethodGet:
+			implUsers.GetUserProfileOwn(w, req)
+		case http.MethodPut:
+			implUsers.UpdateUserProfile(w, req)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	router.HandleFunc(fmt.Sprintf("/tests"), func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case http.MethodGet:
+			implTests.GetAllTests(w, req)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	router.HandleFunc(fmt.Sprintf("/tests/{%s:[0-9]+}", testIdKey), func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case http.MethodGet:
+			implTests.GetTest(w, req)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	router.HandleFunc(fmt.Sprintf("/tests/{%s:[0-9]+}/commit", testIdKey), func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case http.MethodPost:
+			implTests.GetScore(w, req)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	router.HandleFunc(fmt.Sprintf("/tests/rating"), func(w http.ResponseWriter, req *http.Request) {
+		switch req.Method {
+		case http.MethodGet:
+			implTests.GetRating(w, req)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
 	return router
 }
 
@@ -102,7 +158,11 @@ func logMiddleware(handler http.Handler) http.Handler {
 
 func (s *authServer) authMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
-		if req.URL.Path == "/register" || req.URL.Path == "/login" || req.URL.Path == "/user2fa" {
+		//todo: убрать
+		handler.ServeHTTP(writer, req)
+		return
+		if req.URL.Path == "/register" || req.URL.Path == "/login" || req.URL.Path == "/user2fa" ||
+			req.URL.Path == "/tests/rating" || req.URL.Path == "/tests" {
 			handler.ServeHTTP(writer, req)
 			// после успешного логина клиенту нужно запросить 2fa
 			// после регистрации клиенту выдается qr код

@@ -45,6 +45,7 @@ func (s *authServer) Register(w http.ResponseWriter, req *http.Request) {
 	userInput := structs.RegisterUserInput{
 		Login:    unm.Login,
 		Password: unm.Password,
+		Email:    unm.Email,
 	}
 	data, status := s.register(req.Context(), userInput)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status))
