@@ -4,8 +4,8 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_DB: db_1
-      POSTGRES_USER: user
+      POSTGRES_DB: db_bip
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
       - "5423:5432"
@@ -15,7 +15,7 @@ services:
   project:
     build:
       context: .
-      dockerfile: ../build/package/Dockerfile
+      dockerfile: ./build/package/Dockerfile
     restart: "no"
     ports:
       - "8080:8080"

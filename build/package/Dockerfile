@@ -20,7 +20,6 @@ RUN make build
 
 FROM alpine:latest as server
 ARG MODULE_NAME=github.com/vladimirbannikov/BIP-backend
-RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 COPY --from=builder /home/${MODULE_NAME}/bin/main .
@@ -36,7 +35,7 @@ ENV CONFIG_FILE ${CONFIG_FILE}
 
 ARG MIGRATION_FOLDER=postgres/migrations
 ENV MIGRATION_FOLDER=${MIGRATION_FOLDER}
-ARG POSTGRES_SETUP="user=user password=password dbname=db_bip host=postgres port=5432 sslmode=disable"
+ARG POSTGRES_SETUP="user=postgres password=password dbname=db_bip host=postgres port=5432 sslmode=disable"
 ENV POSTGRES_SETUP=${POSTGRES_SETUP}
 
 
