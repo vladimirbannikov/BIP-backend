@@ -132,7 +132,7 @@ func createRouter(implUsers usersServer, implAuth authServer, implTests testsSer
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
-	router.HandleFunc(fmt.Sprintf("/tests/rating"), func(w http.ResponseWriter, req *http.Request) {
+	router.HandleFunc(fmt.Sprintf("/rating"), func(w http.ResponseWriter, req *http.Request) {
 		switch req.Method {
 		case http.MethodGet:
 			implTests.GetRating(w, req)
@@ -158,11 +158,8 @@ func logMiddleware(handler http.Handler) http.Handler {
 
 func (s *authServer) authMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
-		//todo: убрать
-		handler.ServeHTTP(writer, req)
-		return
 		if req.URL.Path == "/register" || req.URL.Path == "/login" || req.URL.Path == "/user2fa" ||
-			req.URL.Path == "/tests/rating" || req.URL.Path == "/tests" {
+			req.URL.Path == "/rating" || req.URL.Path == "/tests" {
 			handler.ServeHTTP(writer, req)
 			// после успешного логина клиенту нужно запросить 2fa
 			// после регистрации клиенту выдается qr код
