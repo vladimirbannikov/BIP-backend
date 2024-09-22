@@ -7,6 +7,6 @@ server:
 database:
   host: "postgres"
   port: 5432
-  user: "user"
+  user: "postgres"
   password: "password"
   name: "db_bip"

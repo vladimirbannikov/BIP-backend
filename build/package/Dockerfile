@@ -4,7 +4,7 @@ FROM golang:1.22-alpine AS builder
 RUN apk add --update make git curl
 RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
-ARG MODULE_NAME=gitlab.ozon.dev/v2bannikov/BIP-backend
+ARG MODULE_NAME=github.com/vladimirbannikov/BIP-backend
 
 COPY Makefile /home/${MODULE_NAME}/Makefile
 COPY go.mod /home/${MODULE_NAME}/go.mod
@@ -19,8 +19,7 @@ RUN make build
 # Service
 
 FROM alpine:latest as server
-ARG MODULE_NAME=gitlab.ozon.dev/v2bannikov/BIP-backend
-RUN apk --no-cache add ca-certificates
+ARG MODULE_NAME=github.com/vladimirbannikov/BIP-backend
 WORKDIR /root/
 
 COPY --from=builder /home/${MODULE_NAME}/bin/main .
@@ -36,7 +35,7 @@ ENV CONFIG_FILE ${CONFIG_FILE}
 
 ARG MIGRATION_FOLDER=postgres/migrations
 ENV MIGRATION_FOLDER=${MIGRATION_FOLDER}
-ARG POSTGRES_SETUP="user=user password=password dbname=db_bip host=postgres port=5432 sslmode=disable"
+ARG POSTGRES_SETUP="user=postgres password=password dbname=db_bip host=postgres port=5432 sslmode=disable"
 ENV POSTGRES_SETUP=${POSTGRES_SETUP}
 
 

@@ -14,11 +14,16 @@ type UserDTO struct {
 }
 
 type UserProfile struct {
-	Login string `json:"login"`
-	Info  string `json:"info"`
+	Login             string `json:"login"`
+	Email             string `json:"email"`
+	TotalScore        int    `json:"total_score"`
+	TestCount         int    `json:"tests_count"`
+	GlobalRatingPlace int    `json:"global_rating"`
 }
 
 type UserProfileDTO struct {
-	Login string `json:"login"`
-	Info  string `json:"info"`
+	Login      string `db:"login"`
+	Email      string `db:"email"`
+	TotalScore int    `db:"total_score"`
+	TestCount  int    `db:"tests_count"`
 }

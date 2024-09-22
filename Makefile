@@ -28,8 +28,8 @@ run-local: build db-migration-up
 
 # run in docker
 .PHONY: docker-run
-docker-run:
-	cd $(DEPLOY_DIR) && docker-compose up --build postgres project
+docker-run: build
+	docker-compose up --build postgres project
 
 # build app
 .PHONY: build

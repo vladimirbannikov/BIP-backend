@@ -12,6 +12,8 @@ type UsersRepo interface {
 	CreateUser(ctx context.Context, user *structs.UserDTO) (int, error)
 	GetUserByLogin(ctx context.Context, login string) (*structs.UserDTO, error)
 	DeleteUserByLogin(ctx context.Context, login string) error
+	GetUserProfileByLogin(ctx context.Context, login string) (*structs.UserProfile, error)
+	UpdateUser(ctx context.Context, user *structs.UserDTO) error
 }
 
 type UsersStorage struct {
@@ -44,6 +46,32 @@ func (s *UsersStorage) GetUserByLogin(ctx context.Context, login string) (struct
 		return structs.UserDTO{}, err
 	}
 	return *user, nil
+}
+
+func (s *UsersStorage) GetUserProfileByLogin(ctx context.Context, login string) (structs.UserProfile, error) {
+	profile, err := s.usersRepo.GetUserProfileByLogin(ctx, login)
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return structs.UserProfile{}, models.ErrNotFound
+		}
+		return structs.UserProfile{}, err
+	}
+	return *profile, nil
+}
+
+func (s *UsersStorage) UpdateUser(ctx context.Context, user structs.UserDTO) error {
+	err := s.usersRepo.UpdateUser(ctx, &structs.UserDTO{
+		Login:        user.Login,
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
+	})
+	if err != nil {
+		if errors.Is(err, repository.ErrDuplicateKey) {
+			return models.ErrConflict
+		}
+		return err
+	}
+	return nil
 }
 
 // DeleteUserByLogin user
