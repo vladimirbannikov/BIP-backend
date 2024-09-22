@@ -34,6 +34,8 @@ type testsServer struct {
 func (s *testsServer) GetAllTests(w http.ResponseWriter, req *http.Request) {
 	data, status := s.getAllTests(req.Context())
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)
 	if err != nil {
@@ -75,6 +77,8 @@ func (s *testsServer) GetTest(w http.ResponseWriter, req *http.Request) {
 
 	data, status := s.getTest(req.Context(), id)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
@@ -148,6 +152,8 @@ func (s *testsServer) GetScore(w http.ResponseWriter, req *http.Request) {
 
 	data, status := s.getScore(req.Context(), tokenStr, testId, unm)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
@@ -187,6 +193,8 @@ func (s *testsServer) getScore(ctx context.Context, tokenStr string, testID int,
 func (s *testsServer) GetRating(w http.ResponseWriter, req *http.Request) {
 	data, status := s.getRating(req.Context())
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)
 	if err != nil {

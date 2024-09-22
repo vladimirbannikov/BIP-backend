@@ -32,6 +32,8 @@ func (s *usersServer) GetUserProfileOwn(w http.ResponseWriter, req *http.Request
 
 	data, status := s.getUserProfileOwn(req.Context(), tokenStr)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)
 	if err != nil {
@@ -88,6 +90,8 @@ func (s *usersServer) UpdateUserProfile(w http.ResponseWriter, req *http.Request
 	}
 	data, status := s.updateUserProfile(req.Context(), tokenStr, userUpdate)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
@@ -118,6 +122,8 @@ func (s *usersServer) GetUserProfile(w http.ResponseWriter, req *http.Request) {
 
 	data, status := s.getUserProfile(req.Context(), login)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)
 	if err != nil {

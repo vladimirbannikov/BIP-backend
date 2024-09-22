@@ -49,6 +49,8 @@ func (s *authServer) Register(w http.ResponseWriter, req *http.Request) {
 	}
 	data, status := s.register(req.Context(), userInput)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "multipart/form-data")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
@@ -85,6 +87,8 @@ func (s *authServer) Login(w http.ResponseWriter, req *http.Request) {
 	}
 	data, status := s.login(req.Context(), loginInput)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
@@ -114,6 +118,8 @@ func (s *authServer) Logout(w http.ResponseWriter, req *http.Request) {
 
 	data, status := s.logout(req.Context(), tokenStr)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)
 	if err != nil {
@@ -161,6 +167,8 @@ func (s *authServer) User2FA(w http.ResponseWriter, req *http.Request) {
 	data, status := s.user2fa(req.Context(), unm.Code, tokenStr)
 
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
