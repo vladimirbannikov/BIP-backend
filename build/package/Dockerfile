@@ -40,6 +40,7 @@ ENV POSTGRES_SETUP=${POSTGRES_SETUP}
 
 
 CMD ["sh", "-c", "export CONFIG_PATH=${CONFIG_FILE}  && \
+    sleep 7 && \
     ./goose -dir ${MIGRATION_FOLDER} postgres \"${POSTGRES_SETUP}\" up && \
     ./main && \
     ./goose -dir ${MIGRATION_FOLDER} postgres \"${POSTGRES_SETUP}\" down"]

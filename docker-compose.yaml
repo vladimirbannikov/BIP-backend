@@ -18,7 +18,7 @@ services:
       dockerfile: ./build/package/Dockerfile
     restart: "no"
     ports:
-      - "8080:8080"
+      - "9085:8080"
     depends_on:
       - postgres
     networks:

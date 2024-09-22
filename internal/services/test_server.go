@@ -55,6 +55,7 @@ func (s *testsServer) getAllTests(ctx context.Context) ([]byte, int) {
 			Name:        t.Name,
 			Description: t.Description,
 			Category:    t.Category,
+			DiffLevel:   t.DiffLevel,
 		})
 	}
 

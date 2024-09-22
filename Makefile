@@ -28,7 +28,7 @@ run-local: build db-migration-up
 
 # run in docker
 .PHONY: docker-run
-docker-run: build
+docker-run:
 	docker-compose up --build postgres project
 
 # build app
