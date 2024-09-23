@@ -17,14 +17,38 @@ type TestsRepo interface {
 
 type TestsStorage struct {
 	testsRepo TestsRepo
+	tp        TestPicProvider
 }
 
-func NewTestsStorage(testsRepo TestsRepo) TestsStorage {
-	return TestsStorage{testsRepo: testsRepo}
+type TestPicProvider interface {
+	GetPictureByte(pic string) ([]byte, error)
+}
+
+func NewTestsStorage(testsRepo TestsRepo, tp TestPicProvider) TestsStorage {
+	return TestsStorage{testsRepo: testsRepo, tp: tp}
 }
 
 func (t *TestsStorage) GetTests(ctx context.Context, limit int, offset int) ([]structs.TestSimple, error) {
-	return t.testsRepo.GetTests(ctx, limit, offset)
+	tests, err := t.testsRepo.GetTests(ctx, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	testsOut := make([]structs.TestSimple, 0)
+	for _, test := range tests {
+		picByte, err := t.tp.GetPictureByte(string(test.Picture))
+		if err != nil {
+			return nil, err
+		}
+		testsOut = append(testsOut, structs.TestSimple{
+			ID:          test.ID,
+			Name:        test.Name,
+			Description: test.Description,
+			Category:    test.Category,
+			DiffLevel:   test.DiffLevel,
+			Picture:     picByte,
+		})
+	}
+	return testsOut, nil
 }
 
 func (t *TestsStorage) GetFullTestByID(ctx context.Context, id int) (structs.TestFull, error) {

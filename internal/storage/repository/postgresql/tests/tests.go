@@ -23,7 +23,7 @@ func New(db db.DBops) *Repo {
 func (r *Repo) GetTests(ctx context.Context, limit int, offset int) ([]structs.TestSimple, error) {
 	var tests []*structs.TestSimple
 	err := r.db.Select(ctx, &tests,
-		`SELECT id, name, description, category, diff_level  
+		`SELECT id, name, description, category, diff_level, pictureFile  
 		FROM test 
 		ORDER by id 
 		limit $1 offset $2;

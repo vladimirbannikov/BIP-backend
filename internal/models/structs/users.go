@@ -19,6 +19,7 @@ type UserProfile struct {
 	TotalScore        int    `json:"total_score"`
 	TestCount         int    `json:"tests_count"`
 	GlobalRatingPlace int    `json:"global_rating"`
+	Avatar            []byte `json:"avatar"`
 }
 
 type UserProfileDTO struct {
@@ -26,4 +27,5 @@ type UserProfileDTO struct {
 	Email      string `db:"email"`
 	TotalScore int    `db:"total_score"`
 	TestCount  int    `db:"tests_count"`
+	AvatarFile string `db:"avatarfile"`
 }

@@ -3,56 +3,66 @@
 
 /*tests*/
 
-insert into test(id, name, description, diff_level, category)
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (1, 'Угадай персонажей аниме Наруто',
         'Попробуй угадать персонажа аниме и манги Наруто!',
        1,
-        'аниме');
-insert into test(id, name, description, diff_level, category)
+        'аниме',
+        'naruto-test.jpg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (2, 'Угадай персонажей советских мультфильмов',
         'Попробуй угадать персонажей из советских мультфильмов!',
         2,
-        'мультфильмы');
-insert into test(id, name, description, diff_level, category)
+        'мультфильмы',
+        'soviet-mult.jpg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (3, 'Школьный тест по инфоматике',
         'В тесте собраны вопросы из ОГЭ по информатике, проверьте свои знания!',
         1,
-        'школа');
-insert into test(id, name, description, diff_level, category)
+        'школа',
+        'info-oge.jpg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (4, 'Угадай персонажей американских мультфильмов',
         'Попробуй угадать персонажей из американских мультфильмов!',
         2,
-        'мультфильмы');
-insert into test(id, name, description, diff_level, category)
+        'мультфильмы',
+        'american_shit.jpg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (5, 'Школьный тест по биологии',
         'В тесте собраны вопросы из ОГЭ по биологии, проверьте свои знания!',
         3,
-        'школа');
-insert into test(id, name, description, diff_level, category)
+        'школа',
+        'biotest.jpg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (6, 'anime test 2',
         'anime test  2 description',
         1,
-        'аниме');
-insert into test(id, name, description, diff_level, category)
+        'аниме',
+        'animetest2.jpeg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (7, 'anime test 3',
         'anime test  3 description',
         1,
-        'аниме');
-insert into test(id, name, description, diff_level, category)
+        'аниме',
+        'animetest3.jpeg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (8, 'anime test 4',
         'anime test 4 description',
         1,
-        'аниме');
-insert into test(id, name, description, diff_level, category)
+        'аниме',
+        'animetest4.jpeg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (9, 'anime test 5',
         'anime test  5 description',
         1,
-        'аниме');
-insert into test(id, name, description, diff_level, category)
+        'аниме',
+        'animetest5.jpeg');
+insert into test(id, name, description, diff_level, category, pictureFile)
 values (10, 'Школьный тест по математике',
         'В тесте собраны вопросы из ОГЭ по математике, проверьте свои знания!',
     1,
-        'школа');
+        'школа',
+        'mathtest.jpg');
 
 
 insert into test_questions(id, test_id, question, is_song)
@@ -108,8 +118,8 @@ values (4, 'var4', false);
 /*users, score*/
 insert into users_schema.users(login, password_hash, email)
 values ('user1', 'passhash', 'user1@gmail.com');
-insert into users_schema.user_profile(login, tests_count, total_score)
-values ('user1', 2, 5);
+insert into users_schema.user_profile(login, tests_count, total_score, avatarFile)
+values ('user1', 2, 5, 'file_149450541.jpg');
 insert into user_test_score(test_id, user_login, score)
 values (1, 'user1', 1);
 insert into user_test_score(test_id, user_login, score)
@@ -117,20 +127,20 @@ values (2, 'user1', 4);
 
 insert into users_schema.users(login, password_hash, email)
 values ('user2', 'passhash', 'user2@gmail.com');
-insert into users_schema.user_profile(login, tests_count, total_score)
-values ('user2', 1, 6);
+insert into users_schema.user_profile(login, tests_count, total_score, avatarFile)
+values ('user2', 1, 6, 'file_149450563.jpg');
 insert into user_test_score(test_id, user_login, score)
 values (2, 'user2',6);
 
 insert into users_schema.users(login, password_hash, email)
 values ('user3', 'passhash', 'user3@gmail.com');
-insert into users_schema.user_profile(login, tests_count, total_score)
-values ('user3', 0, 0);
+insert into users_schema.user_profile(login, tests_count, total_score, avatarFile)
+values ('user3', 0, 0, 'file_149450558.jpg');
 
 insert into users_schema.users(login, password_hash, email)
 values ('user4', 'passhash', 'user4@gmail.com');
-insert into users_schema.user_profile(login, tests_count, total_score)
-values ('user4', 2, 0);
+insert into users_schema.user_profile(login, tests_count, total_score, avatarFile)
+values ('user4', 2, 0, 'file_149450546.jpg');
 insert into user_test_score(test_id, user_login, score)
 values (1, 'user4', 0);
 insert into user_test_score(test_id, user_login, score)

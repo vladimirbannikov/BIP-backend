@@ -4,11 +4,11 @@
 
 make docker-run
 
-Регистрируемся: curl -v -d '{"login":"user", "email":email@gmail.com","password":"passwd"}' -H "Content-Type: application/json" -X POST localhost:8080/register > qr.png
+Регистрируемся: curl -v -d '{"login":"user", "email":"email@gmail.com","password":"passwd"}' -H "Content-Type: application/json" -X POST localhost:9085/register > qr.png
 
 Получаем qr код (тело ответа нужно конвертировать в png), сканируем в приложении Google Authentificator
 
-Получаем токен(ttl = 24 часа): curl -v -d '{"login":"user","password":"passwd"}' -H "Content-Type: application/json" -X POST localhost:8080/login
+Получаем токен(ttl = 24 часа): curl -v -d '{"login":"user","password":"passwd"}' -H "Content-Type: application/json" -X POST localhost:9085/login
 Использовать полученный токен: "Auth: token"
 
 Для фронта после логина нужно всегда запрашивать у клиента код двухступенчатой аутентификации: 

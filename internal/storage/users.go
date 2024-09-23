@@ -14,19 +14,43 @@ type UsersRepo interface {
 	DeleteUserByLogin(ctx context.Context, login string) error
 	GetUserProfileByLogin(ctx context.Context, login string) (*structs.UserProfile, error)
 	UpdateUser(ctx context.Context, user *structs.UserDTO) error
+	CreateUserProfile(ctx context.Context, user *structs.UserProfileDTO) (int, error)
+}
+
+type AvatarsRepo interface {
+	GetAvatarByte(avatar string) ([]byte, error)
+	GetRandomAvatarFileName() (string, error)
 }
 
 type UsersStorage struct {
-	usersRepo UsersRepo
+	usersRepo   UsersRepo
+	avatarsRepo AvatarsRepo
 }
 
-func NewUsersStorage(usersRepo UsersRepo) UsersStorage {
-	return UsersStorage{usersRepo: usersRepo}
+func NewUsersStorage(usersRepo UsersRepo, avatarsRepo AvatarsRepo) UsersStorage {
+	return UsersStorage{usersRepo: usersRepo, avatarsRepo: avatarsRepo}
 }
 
 // CreateUser user
 func (s *UsersStorage) CreateUser(ctx context.Context, user structs.UserDTO) (int, error) {
+	avatar, err := s.avatarsRepo.GetRandomAvatarFileName()
+	if err != nil {
+		return 0, err
+	}
 	id, err := s.usersRepo.CreateUser(ctx, &user)
+	if err != nil {
+		if errors.Is(err, repository.ErrDuplicateKey) {
+			return 0, models.ErrConflict
+		}
+		return 0, err
+	}
+	id, err = s.usersRepo.CreateUserProfile(ctx, &structs.UserProfileDTO{
+		Login:      user.Login,
+		Email:      "",
+		TotalScore: 0,
+		TestCount:  0,
+		AvatarFile: avatar,
+	})
 	if err != nil {
 		if errors.Is(err, repository.ErrDuplicateKey) {
 			return 0, models.ErrConflict
@@ -56,6 +80,11 @@ func (s *UsersStorage) GetUserProfileByLogin(ctx context.Context, login string) 
 		}
 		return structs.UserProfile{}, err
 	}
+	avatarByte, err := s.avatarsRepo.GetAvatarByte(string(profile.Avatar))
+	if err != nil {
+		return structs.UserProfile{}, err
+	}
+	profile.Avatar = avatarByte
 	return *profile, nil
 }
 

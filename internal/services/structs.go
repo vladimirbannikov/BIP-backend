@@ -25,6 +25,7 @@ type GetUserProfileOwnResp struct {
 	TotalScore        int    `json:"total_score"`
 	TestCount         int    `json:"tests_count"`
 	GlobalRatingPlace int    `json:"global_rating"`
+	Avatar            string `json:"avatar"`
 }
 
 type GetUserProfileResp struct {
@@ -32,6 +33,7 @@ type GetUserProfileResp struct {
 	TotalScore        int    `json:"total_score"`
 	TestCount         int    `json:"tests_count"`
 	GlobalRatingPlace int    `json:"global_rating"`
+	Avatar            string `json:"avatar"`
 }
 
 type UpdateUserProfileReq struct {
@@ -49,6 +51,7 @@ type GetAllTestsRespTest struct {
 	DiffLevel   int    `json:"diff_level"`
 	Description string `json:"description"`
 	Category    string `json:"category"`
+	Picture     string `json:"picture"`
 }
 
 type GetFullTestResp struct {

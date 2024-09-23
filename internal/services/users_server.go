@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -31,7 +32,6 @@ func (s *usersServer) GetUserProfileOwn(w http.ResponseWriter, req *http.Request
 	}
 
 	data, status := s.getUserProfileOwn(req.Context(), tokenStr)
-	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
@@ -54,12 +54,15 @@ func (s *usersServer) getUserProfileOwn(ctx context.Context, tokenStr string) ([
 		return nil, http.StatusInternalServerError
 	}
 
+	avatar64 := base64.StdEncoding.EncodeToString(p.Avatar)
+
 	articleJSON, _ := json.Marshal(GetUserProfileOwnResp{
 		Login:             p.Login,
 		Email:             p.Email,
 		TotalScore:        p.TotalScore,
 		TestCount:         p.TestCount,
 		GlobalRatingPlace: p.GlobalRatingPlace,
+		Avatar:            avatar64,
 	})
 	return articleJSON, http.StatusOK
 }
@@ -89,7 +92,6 @@ func (s *usersServer) UpdateUserProfile(w http.ResponseWriter, req *http.Request
 		Password: unm.Password,
 	}
 	data, status := s.updateUserProfile(req.Context(), tokenStr, userUpdate)
-	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
@@ -121,7 +123,6 @@ func (s *usersServer) GetUserProfile(w http.ResponseWriter, req *http.Request) {
 	login := vars[loginKey]
 
 	data, status := s.getUserProfile(req.Context(), login)
-	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
@@ -140,14 +141,18 @@ func (s *usersServer) getUserProfile(ctx context.Context, login string) ([]byte,
 		if errors.Is(err, models.ErrNotFound) {
 			return nil, http.StatusNotFound
 		}
+		logger.Log(logger.ErrPrefix, fmt.Sprintf(err.Error()))
 		return nil, http.StatusInternalServerError
 	}
+
+	avatar64 := base64.StdEncoding.EncodeToString(p.Avatar)
 
 	articleJSON, _ := json.Marshal(GetUserProfileResp{
 		Login:             p.Login,
 		TotalScore:        p.TotalScore,
 		TestCount:         p.TestCount,
 		GlobalRatingPlace: p.GlobalRatingPlace,
+		Avatar:            avatar64,
 	})
 	return articleJSON, http.StatusOK
 }

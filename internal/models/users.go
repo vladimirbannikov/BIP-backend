@@ -28,13 +28,7 @@ func (u *ModelUsers) GetUserProfile(ctx context.Context, login string) (structs.
 	if err != nil {
 		return structs.UserProfile{}, err
 	}
-	return structs.UserProfile{
-		Login:             user.Login,
-		Email:             user.Email,
-		TotalScore:        user.TotalScore,
-		TestCount:         user.TestCount,
-		GlobalRatingPlace: user.GlobalRatingPlace,
-	}, nil
+	return user, nil
 }
 
 func (u *ModelUsers) UpdateUser(ctx context.Context, tokenStr string, newUser structs.User) error {
@@ -61,5 +55,8 @@ func getUserLoginFromToken(tokenStr string) (string, error) {
 		return "", ErrInvalidToken
 	}
 	login := claims["sub"].(string)
+	if login == "" {
+		return "", ErrInvalidToken
+	}
 	return login, nil
 }
