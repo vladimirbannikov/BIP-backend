@@ -55,5 +55,8 @@ func getUserLoginFromToken(tokenStr string) (string, error) {
 		return "", ErrInvalidToken
 	}
 	login := claims["sub"].(string)
+	if login == "" {
+		return "", ErrInvalidToken
+	}
 	return login, nil
 }

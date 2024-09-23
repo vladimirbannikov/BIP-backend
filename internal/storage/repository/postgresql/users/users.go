@@ -154,7 +154,7 @@ func (r *Repo) UpdateUser(ctx context.Context, user *structs.UserDTO) error {
 	id := 0
 	err := r.db.ExecQueryRow(ctx,
 		`UPDATE users_schema.users set 
-				email = $1, password_hash = $2 WHERE login=$1 returning 1;`, user.Email, user.PasswordHash).Scan(&id)
+				email = $1, password_hash = $2 WHERE login=$3 returning 1;`, user.Email, user.PasswordHash, user.Login).Scan(&id)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		errors.As(err, &pgErr)
