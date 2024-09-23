@@ -492,6 +492,9 @@ components:
         isSong:
           type: boolean
           example: false
+        song:
+          type: string
+          example: asdasdasdasd
         answers:
           type: array
           items: 

@@ -64,6 +64,13 @@ values (10, 'Школьный тест по математике',
         'школа',
         'mathtest.jpg');
 
+insert into test(id, name, description, diff_level, category, pictureFile)
+values (11, 'Тест на знатока музыки восьмедисятых',
+        'В тесте собраны интересные вопросы на тему музыки восьмедисятых',
+        3,
+        'музыка',
+        'music_test.jpg');
+
 
 insert into test_questions(id, test_id, question, is_song)
 values (1, 1, 'Как зовут первого учителя Наруто?', false);
@@ -114,6 +121,54 @@ values (4, 'var3', true);
 insert into question_variants(question_id, answer, is_correct)
 values (4, 'var4', false);
 
+
+insert into test_questions(id, test_id, question, is_song, song_file)
+values (5, 11, 'Угадай песню:', true, 'messagesfromthestars.mp3');
+
+insert into question_variants(question_id, answer, is_correct)
+values (5, 'A) Джастин Бибер - Бейби', false);
+insert into question_variants(question_id, answer, is_correct)
+values (5, 'Б) Нюша - Ночь', false);
+insert into question_variants(question_id, answer, is_correct)
+values (5, 'В) The RAH Band - Messages From the Stars', true);
+insert into question_variants(question_id, answer, is_correct)
+values (5, 'Г) Михаил Круг - Золотые купола', false);
+
+insert into test_questions(id, test_id, question, is_song, song_file)
+values (6, 11, 'Угадай песню:', true, 'smoothoperator.mp3');
+
+insert into question_variants(question_id, answer, is_correct)
+values (6, 'A) Авария - Пей пиво', false);
+insert into question_variants(question_id, answer, is_correct)
+values (6, 'Б) Sade - Smooth Operator', true);
+insert into question_variants(question_id, answer, is_correct)
+values (6, 'В) 2pac - Changez', false);
+insert into question_variants(question_id, answer, is_correct)
+values (6, 'Г) Руки вверх! — Он тебя целует', false);
+
+insert into test_questions(id, test_id, question, is_song, song_file)
+values (7, 11, 'Угадай песню:', true, 'funkytown.mp3');
+
+insert into question_variants(question_id, answer, is_correct)
+values (7, 'A) Lipps Inc - Funky town', true);
+insert into question_variants(question_id, answer, is_correct)
+values (7, 'Б) Вирус - Ручки', false);
+insert into question_variants(question_id, answer, is_correct)
+values (7, 'В) A-ha - Take on me', false);
+insert into question_variants(question_id, answer, is_correct)
+values (7, 'Г) Бригада - Интро', false);
+
+insert into test_questions(id, test_id, question, is_song)
+values (8, 11, 'В каком году распалась группа Битлз?', false);
+
+insert into question_variants(question_id, answer, is_correct)
+values (8, '1998', false);
+insert into question_variants(question_id, answer, is_correct)
+values (8, '1970', true);
+insert into question_variants(question_id, answer, is_correct)
+values (8, '1853', false);
+insert into question_variants(question_id, answer, is_correct)
+values (8, '2018', false);
 
 /*users, score*/
 insert into users_schema.users(login, password_hash, email)

@@ -32,7 +32,6 @@ func (s *usersServer) GetUserProfileOwn(w http.ResponseWriter, req *http.Request
 	}
 
 	data, status := s.getUserProfileOwn(req.Context(), tokenStr)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)
@@ -92,7 +91,6 @@ func (s *usersServer) UpdateUserProfile(w http.ResponseWriter, req *http.Request
 		Password: unm.Password,
 	}
 	data, status := s.updateUserProfile(req.Context(), tokenStr, userUpdate)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
@@ -123,7 +121,6 @@ func (s *usersServer) GetUserProfile(w http.ResponseWriter, req *http.Request) {
 	login := vars[loginKey]
 
 	data, status := s.getUserProfile(req.Context(), login)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)

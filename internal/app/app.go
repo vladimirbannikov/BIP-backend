@@ -8,6 +8,7 @@ import (
 	"github.com/vladimirbannikov/BIP-backend/internal/storage"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage/file-storage/avatars"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage/file-storage/file_provider"
+	"github.com/vladimirbannikov/BIP-backend/internal/storage/file-storage/music"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage/file-storage/test_pictures"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage/repository/postgresql/auth"
 	"github.com/vladimirbannikov/BIP-backend/internal/storage/repository/postgresql/tests"
@@ -28,13 +29,14 @@ func Start() error {
 	authRepo := auth.New(dbStor.DB)
 	testsRepo := tests.New(dbStor.DB)
 
-	af := file_provider.NewFileProvider()
-	ar := avatars.NewRepository(af)
-	tp := test_pictures.NewRepository(af)
+	f := file_provider.NewFileProvider()
+	ar := avatars.NewRepository(f)
+	tp := test_pictures.NewRepository(f)
+	mp := music.NewRepository(f)
 
 	usersStorage := storage.NewUsersStorage(usersRepo, ar)
 	authStorage := storage.NewAuthStorage(authRepo)
-	testsStorage := storage.NewTestsStorage(testsRepo, tp)
+	testsStorage := storage.NewTestsStorage(testsRepo, tp, mp)
 
 	amdl := models.NewModelAuth(&authStorage, &usersStorage)
 	umdl := models.NewModelUsers(&usersStorage)

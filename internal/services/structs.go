@@ -67,6 +67,7 @@ type GetFullTestRespQuestion struct {
 	Id       int                     `json:"id"`
 	Question string                  `json:"question"`
 	IsSong   bool                    `json:"isSong"`
+	Song     string                  `json:"song"`
 	Answers  []GetFullTestRespAnswer `json:"answers"`
 }
 

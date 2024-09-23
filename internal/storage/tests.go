@@ -18,14 +18,19 @@ type TestsRepo interface {
 type TestsStorage struct {
 	testsRepo TestsRepo
 	tp        TestPicProvider
+	mp        MusicProvider
 }
 
 type TestPicProvider interface {
 	GetPictureByte(pic string) ([]byte, error)
 }
 
-func NewTestsStorage(testsRepo TestsRepo, tp TestPicProvider) TestsStorage {
-	return TestsStorage{testsRepo: testsRepo, tp: tp}
+type MusicProvider interface {
+	GetMusicByte(music string) ([]byte, error)
+}
+
+func NewTestsStorage(testsRepo TestsRepo, tp TestPicProvider, mp MusicProvider) TestsStorage {
+	return TestsStorage{testsRepo: testsRepo, tp: tp, mp: mp}
 }
 
 func (t *TestsStorage) GetTests(ctx context.Context, limit int, offset int) ([]structs.TestSimple, error) {
@@ -51,8 +56,23 @@ func (t *TestsStorage) GetTests(ctx context.Context, limit int, offset int) ([]s
 	return testsOut, nil
 }
 
-func (t *TestsStorage) GetFullTestByID(ctx context.Context, id int) (structs.TestFull, error) {
-	return t.testsRepo.GetFullTestByID(ctx, id)
+func (t *TestsStorage) GetFullTestByID(ctx context.Context, id int, isCheck bool) (structs.TestFull, error) {
+	test, err := t.testsRepo.GetFullTestByID(ctx, id)
+	if err != nil {
+		return structs.TestFull{}, err
+	}
+	if !isCheck {
+		for i, question := range test.Questions {
+			if question.IsSong {
+				musicByte, err := t.mp.GetMusicByte(string(question.Song))
+				if err != nil {
+					return structs.TestFull{}, err
+				}
+				test.Questions[i].Song = musicByte
+			}
+		}
+	}
+	return test, nil
 }
 
 func (t *TestsStorage) SaveScore(ctx context.Context, score structs.UserScore) error {

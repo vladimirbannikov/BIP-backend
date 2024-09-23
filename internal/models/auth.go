@@ -76,6 +76,8 @@ func (m *ModelAuth) create2FAGoogleAuth(ctx context.Context, email string, secre
 
 	URL.Path += "/" + url.PathEscape(ServiceName) + ":" + url.PathEscape(email)
 
+	fmt.Print(URL.Path)
+
 	secretBase32 := base32.StdEncoding.EncodeToString([]byte(secret))
 
 	params := url.Values{}

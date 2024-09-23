@@ -15,12 +15,6 @@ import (
 	"strconv"
 )
 
-// TODO: service layer
-// todo: rating вернуть
-// todo: get profile
-// todo: get test
-// todo: получить скор по тесту
-
 type TestsModelManager interface {
 	GetTests(ctx context.Context, limit int, offset int) ([]structs.TestSimple, error)
 	GetFullTestByID(ctx context.Context, id int) (structs.TestFull, error)
@@ -34,7 +28,6 @@ type testsServer struct {
 
 func (s *testsServer) GetAllTests(w http.ResponseWriter, req *http.Request) {
 	data, status := s.getAllTests(req.Context())
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)
@@ -80,7 +73,6 @@ func (s *testsServer) GetTest(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data, status := s.getTest(req.Context(), id)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
@@ -105,10 +97,17 @@ func (s *testsServer) getTest(ctx context.Context, id int) ([]byte, int) {
 				Answer: a.Answer,
 			})
 		}
+
+		song := ""
+		if q.IsSong {
+			song = base64.StdEncoding.EncodeToString(q.Song)
+		}
+
 		questions = append(questions, GetFullTestRespQuestion{
 			Id:       q.ID,
 			Question: q.Question,
 			IsSong:   q.IsSong,
+			Song:     song,
 			Answers:  answers,
 		})
 	}
@@ -155,7 +154,6 @@ func (s *testsServer) GetScore(w http.ResponseWriter, req *http.Request) {
 
 	data, status := s.getScore(req.Context(), tokenStr, testId, unm)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
@@ -196,7 +194,6 @@ func (s *testsServer) getScore(ctx context.Context, tokenStr string, testID int,
 func (s *testsServer) GetRating(w http.ResponseWriter, req *http.Request) {
 	data, status := s.getRating(req.Context())
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err := w.Write(data)

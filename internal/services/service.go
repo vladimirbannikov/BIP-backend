@@ -59,6 +59,8 @@ func createRouter(implUsers usersServer, implAuth authServer, implTests testsSer
 		switch req.Method {
 		case http.MethodPost:
 			implAuth.Register(w, req)
+		case http.MethodOptions:
+			return
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -68,6 +70,8 @@ func createRouter(implUsers usersServer, implAuth authServer, implTests testsSer
 		switch req.Method {
 		case http.MethodPost:
 			implAuth.Login(w, req)
+		case http.MethodOptions:
+			return
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -77,6 +81,8 @@ func createRouter(implUsers usersServer, implAuth authServer, implTests testsSer
 		switch req.Method {
 		case http.MethodDelete:
 			implAuth.Logout(w, req)
+		case http.MethodOptions:
+			return
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -86,6 +92,8 @@ func createRouter(implUsers usersServer, implAuth authServer, implTests testsSer
 		switch req.Method {
 		case http.MethodPost:
 			implAuth.User2FA(w, req)
+		case http.MethodOptions:
+			return
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -105,6 +113,8 @@ func createRouter(implUsers usersServer, implAuth authServer, implTests testsSer
 			implUsers.GetUserProfileOwn(w, req)
 		case http.MethodPut:
 			implUsers.UpdateUserProfile(w, req)
+		case http.MethodOptions:
+			return
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -129,6 +139,8 @@ func createRouter(implUsers usersServer, implAuth authServer, implTests testsSer
 		switch req.Method {
 		case http.MethodPost:
 			implTests.GetScore(w, req)
+		case http.MethodOptions:
+			return
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -148,6 +160,12 @@ const authHeaderStr = "Auth"
 
 func logMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
+		writer.Header().Set("Access-Control-Allow-Origin", "*")
+		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if method := req.Method; method == http.MethodOptions {
+			return
+		}
+
 		rawRequest, _ := httputil.DumpRequest(req, true)
 		if req.URL.Path == "/register" {
 			handler.ServeHTTP(writer, req)
