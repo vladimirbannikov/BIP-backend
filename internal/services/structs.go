@@ -99,3 +99,7 @@ type GetRatingRespUnit struct {
 	Place int    `json:"place"`
 	Score int    `json:"score"`
 }
+
+type QrCodeResp struct {
+	Qr string `json:"qr"`
+}

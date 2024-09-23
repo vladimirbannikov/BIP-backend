@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base32"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"github.com/dgryski/dgoogauth"
@@ -65,7 +66,9 @@ func (m *ModelAuth) RegisterUser(ctx context.Context, input structs.RegisterUser
 		return "", err
 	}
 
-	return string(qr.PNG()), nil
+	qr4 := base64.StdEncoding.EncodeToString(qr.PNG())
+
+	return qr4, nil
 }
 
 func (m *ModelAuth) create2FAGoogleAuth(ctx context.Context, email string, secret string) (code qrlib.Code, err error) {
