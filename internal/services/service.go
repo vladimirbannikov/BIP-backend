@@ -169,6 +169,7 @@ func logMiddleware(handler http.Handler) http.Handler {
 		rawRequest, _ := httputil.DumpRequest(req, true)
 		if req.URL.Path == "/register" {
 			handler.ServeHTTP(writer, req)
+			return
 		}
 		logger.Log(logger.InfoPrefix, fmt.Sprintf("%q", rawRequest))
 		handler.ServeHTTP(writer, req)

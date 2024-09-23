@@ -49,7 +49,7 @@ func (s *authServer) Register(w http.ResponseWriter, req *http.Request) {
 	}
 	data, status := s.register(req.Context(), userInput)
 	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status))
-	w.Header().Set("Content-Type", "multipart/form-data")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_, err = w.Write(data)
 	if err != nil {
@@ -65,7 +65,12 @@ func (s *authServer) register(ctx context.Context, input structs.RegisterUserInp
 		}
 		return nil, http.StatusInternalServerError
 	}
-	return []byte(qr), http.StatusOK
+
+	articleJSON, _ := json.Marshal(QrCodeResp{
+		Qr: qr,
+	})
+
+	return articleJSON, http.StatusOK
 }
 
 func (s *authServer) Login(w http.ResponseWriter, req *http.Request) {
