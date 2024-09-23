@@ -34,10 +34,14 @@ func (r *Repo) CreateUser(ctx context.Context, user *structs.UserDTO) (int, erro
 		}
 		return 0, err
 	}
+	return id, nil
+}
 
-	err = r.db.ExecQueryRow(ctx,
-		`INSERT INTO users_schema.user_profile(login, tests_count, total_score)
-				VALUES($1,$2,$3) returning 1;`, user.Login, 0, 0).Scan(&id)
+func (r *Repo) CreateUserProfile(ctx context.Context, user *structs.UserProfileDTO) (int, error) {
+	id := 0
+	err := r.db.ExecQueryRow(ctx,
+		`INSERT INTO users_schema.user_profile(login, tests_count, total_score, avatarFile)
+				VALUES($1,$2,$3,$4) returning 1;`, user.Login, 0, 0, user.AvatarFile).Scan(&id)
 
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -85,7 +89,7 @@ func (r *Repo) GetUserProfileByLogin(ctx context.Context, login string) (*struct
 	var info structs.UserProfileDTO
 	err := r.db.Get(ctx, &info,
 		`SELECT u.login as login, u.email as email, up.total_score as total_score, 
-       up.tests_count as tests_count  FROM users_schema.users u
+       up.tests_count as tests_count, up.avatarFile as avatarfile  FROM users_schema.users u
                 left join users_schema.user_profile up on u.login = up.login 
                                                 WHERE u.login=$1;`, login)
 	if err != nil {
@@ -114,6 +118,7 @@ func (r *Repo) GetUserProfileByLogin(ctx context.Context, login string) (*struct
 		TotalScore:        info.TotalScore,
 		TestCount:         info.TestCount,
 		GlobalRatingPlace: place,
+		Avatar:            []byte(info.AvatarFile),
 	}, nil
 }
 

@@ -6,6 +6,7 @@ type TestSimple struct {
 	Description string `db:"description"`
 	Category    string `db:"category"`
 	DiffLevel   int    `db:"diff_level"`
+	Picture     []byte `db:"picturefile"`
 }
 
 type TestQuestionDTO struct {

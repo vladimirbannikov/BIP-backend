@@ -7,6 +7,7 @@ import (
 	"github.com/vladimirbannikov/BIP-backend/internal/utils/logger"
 	"net/http"
 	"net/http/httputil"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -158,8 +159,9 @@ func logMiddleware(handler http.Handler) http.Handler {
 
 func (s *authServer) authMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
+		userPathReg, _ := regexp.Match("/user/*", []byte(req.URL.Path))
 		if req.URL.Path == "/register" || req.URL.Path == "/login" || req.URL.Path == "/user2fa" ||
-			req.URL.Path == "/rating" || req.URL.Path == "/tests" {
+			req.URL.Path == "/rating" || req.URL.Path == "/tests" || userPathReg {
 			handler.ServeHTTP(writer, req)
 			// после успешного логина клиенту нужно запросить 2fa
 			// после регистрации клиенту выдается qr код

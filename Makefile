@@ -23,6 +23,7 @@ db-migration-down:
 
 .PHONY: run-local
 run-local: build db-migration-up
+	cp -r file-storage bin/ && \
 	export CONFIG_PATH=$(CONFIG_PATH) && \
     cd bin && ./main
 

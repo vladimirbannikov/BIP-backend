@@ -342,7 +342,10 @@ components:
         global_rating:
           type: integer
           example: 2
-          
+        avatar:
+          type: string
+          example: qwuetyqwe
+
     UserProfile:
       type: object
       properties:
@@ -358,6 +361,9 @@ components:
         global_rating:
           type: integer
           example: 2
+        avatar:
+          type: string
+          example: qwuetyqwe
           
     UpdateUserInput:
       type: object
@@ -417,8 +423,11 @@ components:
         category:
           type: string
           example: anime
- 
- 
+        picture:
+          type: string
+          example: asdsdads
+
+
     CommitTestReq:
       type: object
       properties:

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,7 +34,6 @@ type testsServer struct {
 
 func (s *testsServer) GetAllTests(w http.ResponseWriter, req *http.Request) {
 	data, status := s.getAllTests(req.Context())
-	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
@@ -52,17 +52,21 @@ func (s *testsServer) getAllTests(ctx context.Context) ([]byte, int) {
 
 	tests := make([]GetAllTestsRespTest, 0)
 	for _, t := range p {
+		pic64 := base64.StdEncoding.EncodeToString(t.Picture)
 		tests = append(tests, GetAllTestsRespTest{
 			Id:          t.ID,
 			Name:        t.Name,
 			Description: t.Description,
 			Category:    t.Category,
 			DiffLevel:   t.DiffLevel,
+			Picture:     pic64,
 		})
 	}
 
 	articleJSON, _ := json.Marshal(
-		tests,
+		GetAllTestsResp{
+			Tests: tests,
+		},
 	)
 	return articleJSON, http.StatusOK
 }
@@ -76,7 +80,6 @@ func (s *testsServer) GetTest(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data, status := s.getTest(req.Context(), id)
-	logger.Log(logger.InfoPrefix, fmt.Sprintf("Response: %v %s", status, data))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

@@ -4,15 +4,16 @@ alter TABLE users_schema.user_profile
       add column tests_count int;
 alter TABLE users_schema.user_profile
       add column total_score int;
-/*alter table users_schema.user_profile
-    add column avatar text;*/
+alter table users_schema.user_profile
+    add column avatarFile text;
 
 create table if not exists test (
     id serial primary key,
     name text unique,
     description text,
     diff_level int,
-    category text
+    category text,
+    pictureFile text
 );
 
 create table if not exists test_questions (
@@ -46,8 +47,8 @@ ALTER TABLE users_schema.user_profile
     DROP COLUMN tests_count;
 ALTER TABLE users_schema.user_profile
     DROP COLUMN total_score;
-/*ALTER TABLE users_schema.user_profile
-    DROP COLUMN avatar;*/
+ALTER TABLE users_schema.user_profile
+    DROP COLUMN avatarFile;
 
 drop table test cascade ;
 drop table test_questions cascade;
