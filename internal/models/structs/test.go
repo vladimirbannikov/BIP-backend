@@ -14,6 +14,7 @@ type TestQuestionDTO struct {
 	TestID   int    `db:"test_id"`
 	Question string `db:"question"`
 	IsSong   bool   `db:"is_song"`
+	SongFile string `db:"song_file"`
 }
 
 type TestFull struct {
@@ -30,6 +31,7 @@ type TestQuestionFull struct {
 	TestID   int
 	Question string
 	IsSong   bool
+	Song     []byte
 	Answers  []QuestionAnswer
 }
 

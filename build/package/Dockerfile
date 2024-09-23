@@ -27,6 +27,7 @@ COPY --from=builder /home/${MODULE_NAME}/configs ./configs
 RUN mkdir ./file-storage
 COPY --from=builder /home/${MODULE_NAME}/file-storage/user-avatars ./file-storage/user-avatars
 COPY --from=builder /home/${MODULE_NAME}/file-storage/tests_pictures ./file-storage/tests_pictures
+COPY --from=builder /home/${MODULE_NAME}/file-storage/music ./file-storage/music
 
 COPY --from=builder /go/bin/goose ./goose
 COPY --from=builder /home/${MODULE_NAME}/internal/storage/db/migrations ./postgres/migrations

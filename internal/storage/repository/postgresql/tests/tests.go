@@ -51,7 +51,7 @@ func (r *Repo) GetFullTestByID(ctx context.Context, id int) (structs.TestFull, e
 
 	var questionsDTOsp []*structs.TestQuestionDTO
 	err = r.db.Select(ctx, &questionsDTOsp,
-		`Select id, test_id, question, is_song FROM test_questions WHERE test_id = $1;`, id)
+		`Select id, test_id, question, is_song, song_file FROM test_questions WHERE test_id = $1;`, id)
 	if err != nil {
 		return structs.TestFull{}, err
 	}
@@ -81,6 +81,7 @@ func (r *Repo) GetFullTestByID(ctx context.Context, id int) (structs.TestFull, e
 			TestID:   question.TestID,
 			Question: question.Question,
 			IsSong:   question.IsSong,
+			Song:     []byte(question.SongFile),
 			Answers:  answers,
 		})
 	}

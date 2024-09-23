@@ -20,7 +20,8 @@ create table if not exists test_questions (
     id serial primary key,
     test_id serial REFERENCES test(id),
     question text,
-    is_song bool
+    is_song bool,
+    song_file text not null default ''
 );
 
 create table if not exists question_variants (

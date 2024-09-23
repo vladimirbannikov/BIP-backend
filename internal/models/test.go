@@ -8,7 +8,7 @@ import (
 
 type TestStorager interface {
 	GetTests(ctx context.Context, limit int, offset int) ([]structs.TestSimple, error)
-	GetFullTestByID(ctx context.Context, id int) (structs.TestFull, error)
+	GetFullTestByID(ctx context.Context, id int, isCheck bool) (structs.TestFull, error)
 	SaveScore(ctx context.Context, score structs.UserScore) error
 	GetTotalRating(ctx context.Context, category string, limit int, offset int) (structs.Rating, error)
 }
@@ -38,7 +38,7 @@ func (m *ModelTests) GetTests(ctx context.Context, limit int, offset int) ([]str
 }
 
 func (m *ModelTests) GetFullTestByID(ctx context.Context, id int) (structs.TestFull, error) {
-	test, err := m.ts.GetFullTestByID(ctx, id)
+	test, err := m.ts.GetFullTestByID(ctx, id, false)
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
 			return structs.TestFull{}, ErrNotFound
@@ -62,7 +62,7 @@ func (m *ModelTests) CheckUserAnswers(ctx context.Context, tokenStr string, test
 		return structs.TestResult{}, err
 	}
 
-	test, err := m.ts.GetFullTestByID(ctx, testID)
+	test, err := m.ts.GetFullTestByID(ctx, testID, true)
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
 			return structs.TestResult{}, ErrNotFound
